@@ -1,19 +1,16 @@
-<Background>:
-    start: start
-    options: options
-    exit: exit
-    MyButton:
-        id: start
-        pos: root.center_x - self.size[0] / 2, (root.center_y - self.size[1] * 0.5) + self.size[1] * 2
-        size: root.width / 5, root.height / 10
-        text: "start"
-    MyButton:
-        id: options
-        pos: root.center_x - self.size[0] / 2, (root.center_y - self.size[1] * 0.5)
-        size: root.width / 5, root.height / 10
-        text: "options"
-    MyButton:
-        id: exit
-        pos: root.center_x - self.size[0] / 2, (root.center_y - self.size[1] * 0.5) - self.size[1] * 2
-        size: root.width / 5, root.height / 10
-        text: "exit"
+<MenuScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        Button:
+            text: 'Goto settings'
+            on_press: root.manager.current = 'settings'
+        Button:
+            text: 'Quit'
+
+<SettingsScreen>:
+    BoxLayout:
+        Button:
+            text: 'My settings button'
+        Button:
+            text: 'Back to menu'
+            on_press: root.manager.current = 'menu'

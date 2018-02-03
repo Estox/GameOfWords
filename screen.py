@@ -1,44 +1,42 @@
-from kivy.app import App
-from kivy.lang import Builder
-from kivy.uix.screenmanager import ScreenManager, Screen
+import kivy
+kivy.require('1.0.8')
 
-# Create both screens. Please note the root.manager.current: this is how
-# you can control the ScreenManager from kv. Each screen has by default a
-# property manager that gives you the instance of the ScreenManager used.
-Builder.load_string("""
-<MenuScreen>:
-    BoxLayout:
-        Button:
-            text: 'Goto settings'
-            on_press: root.manager.current = 'settings'
-        Button:
-            text: 'Quit'
+from kivy.core.window import Window
+from kivy.uix.widget import Widget
 
-<SettingsScreen>:
-    BoxLayout:
-        Button:
-            text: 'My settings button'
-        Button:
-            text: 'Back to menu'
-            on_press: root.manager.current = 'menu'
-""")
 
-# Declare both screens
-class MenuScreen(Screen):
-    pass
+class MyKeyboardListener(Widget):
 
-class SettingsScreen(Screen):
-    pass
+    def __init__(self, **kwargs):
+        super(MyKeyboardListener, self).__init__(**kwargs)
+        self._keyboard = Window.request_keyboard(
+            self._keyboard_closed, self, 'text')
+        if self._keyboard.widget:
+            # If it exists, this widget is a VKeyboard object which you can use
+            # to change the keyboard layout.
+            pass
+        self._keyboard.bind(on_key_down=self._on_keyboard_down)
 
-# Create the screen manager
-sm = ScreenManager()
-sm.add_widget(MenuScreen(name='menu'))
-sm.add_widget(SettingsScreen(name='settings'))
+    def _keyboard_closed(self):
+        print('My keyboard have been closed!')
+        self._keyboard.unbind(on_key_down=self._on_keyboard_down)
+        self._keyboard = None
 
-class TestApp(App):
+    def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
+        print('The key', keycode, 'have been pressed')
+        print(' - text is %r' % text)
+        print(' - modifiers are %r' % modifiers)
 
-    def build(self):
-        return sm
+        # Keycode is composed of an integer + a string
+        # If we hit escape, release the keyboard
+        if keycode[1] == 'escape':
+            keyboard.release()
+
+        # Return True to accept the key. Otherwise, it will be used by
+        # the system.
+        return True
+
 
 if __name__ == '__main__':
-    TestApp().run()
+    from kivy.base import runTouchApp
+    runTouchApp(MyKeyboardListener())
